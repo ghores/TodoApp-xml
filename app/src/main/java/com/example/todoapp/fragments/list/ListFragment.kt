@@ -12,6 +12,7 @@ import com.example.todoapp.R
 import com.example.todoapp.databinding.FragmentListBinding
 
 class ListFragment : Fragment() {
+    //binding
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!!
 
