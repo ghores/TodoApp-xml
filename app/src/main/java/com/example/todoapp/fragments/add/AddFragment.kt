@@ -36,6 +36,7 @@ class AddFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         //Set menu
         setHasOptionsMenu(true)
+        binding.prioritiesSpinner.onItemSelectedListener = mSharedViewModel.listener
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
