@@ -3,5 +3,4 @@
     android:animation="@anim/from_bottom"
     android:animationOrder="normal"
     android:delay="15%">
-
 </layoutAnimation>
