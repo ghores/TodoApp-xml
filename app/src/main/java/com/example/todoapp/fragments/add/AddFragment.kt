@@ -1,7 +1,6 @@
 package com.example.todoapp.fragments.add
 
 import android.os.Bundle
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -13,9 +12,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.todoapp.R
-import com.example.todoapp.data.models.Priority
 import com.example.todoapp.data.models.ToDoData
 import com.example.todoapp.databinding.FragmentAddBinding
+import com.example.todoapp.viewmodel.SharedViewModel
 import com.example.todoapp.viewmodel.TodoViewModel
 
 class AddFragment : Fragment() {
@@ -25,11 +24,9 @@ class AddFragment : Fragment() {
 
     //Other
     private val mTodoViewModel: TodoViewModel by viewModels()
+    private val mSharedViewModel: SharedViewModel by viewModels()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
         _binding = FragmentAddBinding.inflate(inflater, container, false)
         return binding.root
@@ -56,13 +53,13 @@ class AddFragment : Fragment() {
         val mTitle = binding.titleEt.text.toString()
         val mPriority = binding.prioritiesSpinner.selectedItem.toString()
         val mDescription = binding.descriptionEt.text.toString()
-        val validation = verifyDataFromUser(mTitle, mDescription)
+        val validation = mSharedViewModel.verifyDataFromUser(mTitle, mDescription)
         if (validation) {
             //Insert data to database
             val newData = ToDoData(
                 id = 0,
                 title = mTitle,
-                priority = parsePriority(mPriority),
+                priority = mSharedViewModel.parsePriority(mPriority),
                 description = mDescription
             )
             mTodoViewModel.insertData(newData)
@@ -72,21 +69,6 @@ class AddFragment : Fragment() {
         } else {
             Toast.makeText(requireContext(), "Please fill out all fields.", Toast.LENGTH_SHORT)
                 .show()
-        }
-    }
-
-    private fun verifyDataFromUser(title: String, description: String): Boolean {
-        return if (TextUtils.isEmpty(title) || TextUtils.isEmpty(description)) {
-            false
-        } else !(title.isEmpty() || description.isEmpty())
-    }
-
-    private fun parsePriority(priority: String): Priority {
-        return when (priority) {
-            "High Priority" -> Priority.HIGH
-            "Medium Priority" -> Priority.MEDIUM
-            "Low Priority" -> Priority.LOW
-            else -> Priority.LOW
         }
     }
 }
