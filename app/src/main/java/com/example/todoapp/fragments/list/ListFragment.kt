@@ -9,15 +9,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp.R
 import com.example.todoapp.data.models.ToDoData
 import com.example.todoapp.databinding.FragmentListBinding
+import com.example.todoapp.fragments.list.adapter.ListAdapter
 import com.example.todoapp.viewmodel.SharedViewModel
 import com.example.todoapp.viewmodel.TodoViewModel
+import com.google.android.material.snackbar.Snackbar
 
 class ListFragment : Fragment() {
     //binding
@@ -29,7 +34,11 @@ class ListFragment : Fragment() {
     private val mTodoViewModel: TodoViewModel by viewModels()
     private val mSharedViewModel: SharedViewModel by viewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentListBinding.inflate(inflater, container, false)
         return binding.root
@@ -44,12 +53,17 @@ class ListFragment : Fragment() {
         setHasOptionsMenu(true)
         //init adapter
         binding.apply {
+            //setup recyclerview
             recyclerView.adapter = listAdapter
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
+            //swipe to delete
+            swipeToDelete(recyclerView)
+            //get all data from database
             mTodoViewModel.getAllData.observe(viewLifecycleOwner) { data ->
                 mSharedViewModel.checkIfDatabaseEmpty(data)
                 listAdapter.setData(data)
             }
+            //observe empty database
             mSharedViewModel.emptyDatabase.observe(viewLifecycleOwner) {
                 showEmptyDatabaseViews(it)
             }
@@ -92,6 +106,34 @@ class ListFragment : Fragment() {
         builder.setTitle("Delete everything?")
         builder.setMessage("Are you sure you want to remove everything?")
         builder.create().show()
+    }
+
+    private fun swipeToDelete(recyclerView: RecyclerView) {
+        val swipeToDeleteCallback = object : SwipeToDelete() {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val deletedItem = listAdapter.dataList[viewHolder.adapterPosition]
+                //Delete Item
+                mTodoViewModel.deleteItem(deletedItem)
+                listAdapter.notifyItemRemoved(viewHolder.adapterPosition)
+                Toast.makeText(requireContext(), "Successfully Removed: '${deletedItem.title}'", Toast.LENGTH_SHORT).show()
+                //Restore Deleted Item
+                restoreDeletedData(viewHolder.itemView, deletedItem, viewHolder.adapterPosition)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
+
+    private fun restoreDeletedData(view: View, deletedItem: ToDoData, position: Int) {
+        val snackBar = Snackbar.make(
+            view, "Deleted '${deletedItem.title}'",
+            Snackbar.LENGTH_LONG
+        )
+        snackBar.setAction("Undo") {
+            mTodoViewModel.insertData(deletedItem)
+            listAdapter.notifyItemChanged(position)
+        }
+        snackBar.show()
     }
 
     override fun onDestroy() {
