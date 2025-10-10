@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todoapp.R
 import com.example.todoapp.data.models.ToDoData
 import com.example.todoapp.databinding.FragmentListBinding
+import com.example.todoapp.viewmodel.SharedViewModel
 import com.example.todoapp.viewmodel.TodoViewModel
 
 class ListFragment : Fragment() {
@@ -26,6 +27,7 @@ class ListFragment : Fragment() {
     //other
     private val listAdapter: ListAdapter by lazy { ListAdapter() }
     private val mTodoViewModel: TodoViewModel by viewModels()
+    private val mSharedViewModel: SharedViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
@@ -45,8 +47,22 @@ class ListFragment : Fragment() {
             recyclerView.adapter = listAdapter
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
             mTodoViewModel.getAllData.observe(viewLifecycleOwner) { data ->
+                mSharedViewModel.checkIfDatabaseEmpty(data)
                 listAdapter.setData(data)
             }
+            mSharedViewModel.emptyDatabase.observe(viewLifecycleOwner) {
+                showEmptyDatabaseViews(it)
+            }
+        }
+    }
+
+    private fun showEmptyDatabaseViews(emptyDatabase: Boolean) {
+        if (emptyDatabase) {
+            binding.noDataImageView.visibility = View.VISIBLE
+            binding.noDataTextView.visibility = View.VISIBLE
+        } else {
+            binding.noDataImageView.visibility = View.INVISIBLE
+            binding.noDataTextView.visibility = View.INVISIBLE
         }
     }
 
