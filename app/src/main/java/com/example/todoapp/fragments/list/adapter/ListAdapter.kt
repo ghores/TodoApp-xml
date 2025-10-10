@@ -16,8 +16,6 @@ import com.example.todoapp.fragments.list.ListFragmentDirections
 
     var dataList = emptyList<ToDoData>()
 
-    inner class MyViewHolder(val binding: RowLayoutBinding) : RecyclerView.ViewHolder(binding.root)
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val binding = RowLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MyViewHolder(binding)
@@ -48,7 +46,10 @@ import com.example.todoapp.fragments.list.ListFragmentDirections
         }
     }
 
-    fun setData(toDoData: List<ToDoData>) {
+     inner class MyViewHolder(val binding: RowLayoutBinding) : RecyclerView.ViewHolder(binding.root)
+
+
+     fun setData(toDoData: List<ToDoData>) {
         val diffUtil = ToDoDiffUtil(dataList, toDoData)
         val diffResult = DiffUtil.calculateDiff(diffUtil)
         dataList = toDoData
