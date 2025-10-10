@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -23,9 +24,8 @@ import com.example.todoapp.viewmodel.SharedViewModel
 import com.example.todoapp.viewmodel.TodoViewModel
 import com.google.android.material.snackbar.Snackbar
 import jp.wasabeef.recyclerview.animators.LandingAnimator
-import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
-class ListFragment : Fragment() {
+class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     //binding
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!!
@@ -82,6 +82,10 @@ class ListFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.list_fragment_menu, menu)
+        val search = menu.findItem(R.id.menu_search)
+        val searchView = search.actionView as? SearchView
+        searchView?.isSubmitButtonEnabled = true
+        searchView?.setOnQueryTextListener(this)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -89,6 +93,28 @@ class ListFragment : Fragment() {
             confirmRemoval()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        if (newText != null) {
+            searchThroughDatabase(newText)
+        }
+        return true    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        if (query != null) {
+            searchThroughDatabase(query)
+        }
+        return true
+    }
+
+    private fun searchThroughDatabase(query: String) {
+        val searchQuery = "%$query%"
+        mTodoViewModel.searchDatabase(searchQuery).observe(viewLifecycleOwner) { list ->
+            list?.let {
+                listAdapter.setData(it)
+            }
+        }
     }
 
     //Show AlertDialog to confirm removal of all items from database table
