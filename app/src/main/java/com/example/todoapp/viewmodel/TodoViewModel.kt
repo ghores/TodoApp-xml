@@ -26,4 +26,10 @@ class TodoViewModel(application: Application) : AndroidViewModel(application) {
             repository.updateData(toDoData)
         }
     }
+
+    fun deleteItem(toDoData: ToDoData) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteItem(toDoData)
+        }
+    }
 }
