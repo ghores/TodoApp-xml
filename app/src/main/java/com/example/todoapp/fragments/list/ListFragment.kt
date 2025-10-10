@@ -89,8 +89,15 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.menu_delete_all) {
-            confirmRemoval()
+        when (item.itemId) {
+            R.id.menu_delete_all -> confirmRemoval()
+            R.id.menu_priority_high -> mTodoViewModel.sortByHighPriority.observe(viewLifecycleOwner) {
+                listAdapter.setData(it)
+            }
+
+            R.id.menu_priority_low -> mTodoViewModel.sortByLowPriority.observe(viewLifecycleOwner) {
+                listAdapter.setData(it)
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -140,7 +147,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
                 val deletedItem = listAdapter.dataList[viewHolder.adapterPosition]
                 //Delete Item
                 mTodoViewModel.deleteItem(deletedItem)
-                listAdapter.notifyItemRemoved(viewHolder.adapterPosition)
                 Toast.makeText(requireContext(), "Successfully Removed: '${deletedItem.title}'", Toast.LENGTH_SHORT).show()
                 //Restore Deleted Item
                 restoreDeletedData(viewHolder.itemView, deletedItem)
@@ -157,7 +163,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         )
         snackBar.setAction("Undo") {
             mTodoViewModel.insertData(deletedItem)
-          //  listAdapter.notifyItemChanged(position)
         }
         snackBar.show()
     }
