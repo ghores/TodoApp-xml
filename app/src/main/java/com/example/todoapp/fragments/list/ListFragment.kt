@@ -7,19 +7,23 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todoapp.R
 import com.example.todoapp.databinding.FragmentListBinding
+import com.example.todoapp.viewmodel.TodoViewModel
 
 class ListFragment : Fragment() {
     //binding
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    //other
+    private val listAdapter: ListAdapter by lazy { ListAdapter() }
+    private val mTodoViewModel: TodoViewModel by viewModels()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
         _binding = FragmentListBinding.inflate(inflater, container, false)
         return binding.root
@@ -32,6 +36,14 @@ class ListFragment : Fragment() {
         }
         //Set menu
         setHasOptionsMenu(true)
+        //init adapter
+        binding.apply {
+            recyclerView.adapter = listAdapter
+            recyclerView.layoutManager = LinearLayoutManager(requireContext())
+            mTodoViewModel.getAllData.observe(viewLifecycleOwner) { data ->
+                listAdapter.setData(data)
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
