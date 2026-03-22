@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-         //enableEdgeToEdge()
+        //enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
         toolbar = findViewById(R.id.toolbar)
