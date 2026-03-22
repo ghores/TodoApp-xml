@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.legacy.kapt)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.navigation.safeargs)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.parcelize)
@@ -30,14 +30,20 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+
+    // بلوک kotlinOptions از اینجا حذف شد
 
     buildFeatures {
         dataBinding = true
         viewBinding = true
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 dependencies {
@@ -56,13 +62,13 @@ dependencies {
     implementation (libs.androidx.navigation.ui.ktx)
     //Room components
     implementation (libs.androidx.room.runtime)
-    kapt (libs.androidx.room.compiler)
+    ksp (libs.androidx.room.compiler)
     //Extensions and coroutines for room
     implementation (libs.androidx.room.ktx)
     //Dagger - Hilt
     implementation (libs.hilt.android)
-    kapt (libs.hilt.compiler)
-    kapt (libs.androidx.hilt.compiler)
+    ksp (libs.hilt.compiler)
+    ksp (libs.androidx.hilt.compiler)
     //Coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
