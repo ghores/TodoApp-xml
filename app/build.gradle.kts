@@ -34,8 +34,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    // بلوک kotlinOptions از اینجا حذف شد
-
     buildFeatures {
         dataBinding = true
         viewBinding = true
@@ -58,17 +56,17 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     //Navigation
-    implementation (libs.androidx.navigation.fragment.ktx)
-    implementation (libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
     //Room components
-    implementation (libs.androidx.room.runtime)
-    ksp (libs.androidx.room.compiler)
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
     //Extensions and coroutines for room
-    implementation (libs.androidx.room.ktx)
+    implementation(libs.androidx.room.ktx)
     //Dagger - Hilt
-    implementation (libs.hilt.android)
-    ksp (libs.hilt.compiler)
-    ksp (libs.androidx.hilt.compiler)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
     //Coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
